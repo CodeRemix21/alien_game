@@ -9,5 +9,8 @@ class Settings():
         self.screen_height = 800
         self.bg_color = (230, 230, 230)
 
+        # Ustawienia prędkości statku
+        self.ship_speed = 10
+
         # FPS
         self.fps = 60
