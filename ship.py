@@ -5,6 +5,9 @@ class Ship:
 
     def __init__(self, ai_game):
         """Inicjalizacja statku kosmicznego i jego położenie początkowe"""
+        # Atrybut settings
+        self.settings = ai_game.settings
+
         self.screen = ai_game.screen
         self.screen_rect = ai_game.screen.get_rect()
 
@@ -15,6 +18,20 @@ class Ship:
         # Statek pojawia się na dole ekranu
         self.rect.midbottom = self.screen_rect.midbottom
 
+        # Poruszanie statkiem w prawo
+        self.move_right = False
+
+        # Poruszanie statkiem w lewo
+        self.move_left = False
+
     def blitme(self):
         """Wyświetlenie statku kosmicznego w jego aktualnym położeniu"""
         self.screen.blit(self.image, self.rect)
+
+    def update_position(self):
+        """Aktualizacja pozycji statku na ekranie"""
+        if self.move_right and self.rect.right < self.screen_rect.right:
+            self.rect.x += self.settings.ship_speed
+        
+        if self.move_left and self.rect.left > 0:   
+            self.rect.x -= self.settings.ship_speed
