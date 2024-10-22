@@ -1,30 +1,44 @@
 import sys
 import pygame
 from settings import Settings
+from ship import Ship
 
 class AlienInvasion:
     """Klasa ogólna przeznaczona do zarządzania zasobami i sposobem dzialania gry"""
 
     def __init__(self):
-        """Tworzenie instancji ustawień do gry"""
+        """Inicjalizacja gry"""
+        # Tworzenie instancji ustawień do gry
         self.settings = Settings()
 
-        """Inicjalizacja gry"""
+        # Ustawienia        
         pygame.init()
         pygame.display.set_caption(self.settings.title)
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
 
+        # Tworzenie instancji statku
+        self.ship = Ship(self)
+
     def run_game(self):
         """Rozpoczęcie gry"""
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
+            self._check_events()
+            self._update_sreen()
 
-            self.screen.fill(self.settings.bg_color)
-            pygame.display.flip()
             self.clock.tick(self.settings.fps)
+
+    def _check_events(self):
+        """Reakcja na zdarzenia generowane przez użytkownika"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+    def _update_sreen(self):
+        """Uaktualnienie obrazów na ekranie"""
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
+        pygame.display.flip()
 
 
 if __name__ == "__main__":
