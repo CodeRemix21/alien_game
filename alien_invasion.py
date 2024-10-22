@@ -25,7 +25,6 @@ class AlienInvasion:
         while True:
             self._check_events()
             self._update_sreen()
-
             self.clock.tick(self.settings.fps)
 
     def _check_events(self):
@@ -33,9 +32,30 @@ class AlienInvasion:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                self._check_keydown_event(event)
+            elif event.type == pygame.KEYUP:
+                self._check_keyup_event(event)
+    
+    def _check_keydown_event(self, event: pygame.event):
+        """Reakcja na uopuszczenie klawisza"""
+        if event.key == pygame.K_q:
+            sys.exit()
+        elif event.key == pygame.K_RIGHT:
+            self.ship.move_right = True
+        elif event.key == pygame.K_LEFT:
+            self.ship.move_left = True
+
+    def _check_keyup_event(self, event: pygame.event):
+        """Reakcja na naciśnięcie klawisza"""
+        if event.key == pygame.K_RIGHT:
+            self.ship.move_right = False
+        elif event.key == pygame.K_LEFT:
+            self.ship.move_left = False
 
     def _update_sreen(self):
         """Uaktualnienie obrazów na ekranie"""
+        self.ship.update_position()
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
         pygame.display.flip()
