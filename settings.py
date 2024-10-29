@@ -7,7 +7,8 @@ class Settings():
         self.title = "Inwazja obcych"
         self.screen_width = 1200
         self.screen_height = 800
-        self.bg_color = (230, 230, 230)
+        self.bg_color = (0, 0, 0)
+        self.background_speed = 2
 
         # Ustawienia statku
         self.ship_speed = 5
