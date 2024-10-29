@@ -11,7 +11,7 @@ class Bullet(Sprite):
         self.settings = ai_game.settings
 
         # Wczytanie obrazu pocisku i pobranie jego prostokąta
-        self.image = pygame.image.load('images/bullet.bmp')
+        self.image = pygame.image.load('images/bullet_T.png')
         self.rect = self.image.get_rect()
 
         # Pocisk pojawia się na górze statku
