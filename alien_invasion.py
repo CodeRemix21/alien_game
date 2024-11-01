@@ -46,6 +46,7 @@ class AlienInvasion:
                 self._check_keydown_event(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_event(event)
+        self._check_collision()
     
     def _check_keydown_event(self, event: pygame.event):
         """Reakcja na upuszczenie klawisza"""
@@ -64,6 +65,12 @@ class AlienInvasion:
             self.ship.move_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.move_left = False
+
+    def _check_collision(self):
+        """Sprawdzenie czy zachodzi kolizacja pomiędzy pociskami i obcymi"""
+        alien_bullet_coll = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            print("statek trafiony")
 
     def _update_screen(self):
         """Uaktualnienie obrazów na ekranie"""
@@ -92,6 +99,11 @@ class AlienInvasion:
     def _update_fleet(self):
         """Uaktualnieie obych na ekranie"""
         for alien in self.aliens.sprites():
+            alien.update_position()
+            # Jeżeli obcy przy krawędzi -> zmień kierunek
+            if alien.check_edges():
+                alien.change_direction()
+
             alien.blitme()
 
     def _fire_bullet(self):

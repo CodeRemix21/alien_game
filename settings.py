@@ -15,7 +15,11 @@ class Settings():
 
         # Ustawienia pocisku
         self.bullet_speed = 10
-        self.bullets_allowed = 5
+        self.bullets_allowed = 10
+
+        # Ustawienia obcego
+        self.alien_speed = 2
+        self.fleet_drop_speed = 0.75
 
         # FPS
         self.fps = 60
