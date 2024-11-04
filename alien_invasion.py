@@ -1,10 +1,12 @@
 import sys
 import pygame
+from time import sleep
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
 from background import Background
+from game_stats import GameStats
 
 class AlienInvasion:
     """Klasa ogólna przeznaczona do zarządzania zasobami i sposobem dzialania gry"""
@@ -26,9 +28,14 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         # Tworzenie instancji obcych i ich floty
         self.aliens = pygame.sprite.Group()
-        self._create_fleet()
+        self.number_of_aliens = self._create_fleet()
         # Tworzenie tła
         self.background = Background(self)
+        # Tworzenie instancji statystyk
+        self.stats = GameStats(self, self.number_of_aliens)
+
+        # Gra aktywna
+        self.game_active = True
 
     def run_game(self):
         """Rozpoczęcie gry"""
@@ -47,6 +54,7 @@ class AlienInvasion:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_event(event)
         self._check_collision()
+        self._check_aliens_bottom()
     
     def _check_keydown_event(self, event: pygame.event):
         """Reakcja na upuszczenie klawisza"""
@@ -69,16 +77,33 @@ class AlienInvasion:
     def _check_collision(self):
         """Sprawdzenie czy zachodzi kolizacja pomiędzy pociskami i obcymi"""
         alien_bullet_coll = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        if alien_bullet_coll:
+            self.stats.killed_aliens += len(alien_bullet_coll)
+            self.stats.aliens_left -= len(alien_bullet_coll)
+            print(f"Zabito {self.stats.killed_aliens} obych")
+            print(f"Pozostało {self.stats.aliens_left} obych")
+
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             print("statek trafiony")
+            self.stats.killed_aliens_in_game()
+            self.stats.reset_killed_aliens()
+            self._ship_hit()
+
+    def _check_aliens_bottom(self):
+        """Sprawdzenie czy obcy przekroczył dolną krawędź"""        
+        for alien in self.aliens.sprites():
+            if alien.check_bottom():
+                self._ship_hit()
+                break
 
     def _update_screen(self):
         """Uaktualnienie obrazów na ekranie"""
         self.screen.fill(self.settings.bg_color)
         self.background.run_background()
-        self._update_ship()
-        self._update_bullets()
-        self._update_fleet()
+        if self.game_active:
+            self._update_ship()
+            self._update_bullets()
+            self._update_fleet()
 
         pygame.display.flip()
 
@@ -127,6 +152,7 @@ class AlienInvasion:
                 self._create_alien(current_x, current_y)
                 current_x += 2*alien_width
             current_y += 2 * alien_height
+        return self.aliens.__len__()
 
     def _create_alien(self, x_pos, y_pos):
         """Utworzenie obcego"""
@@ -134,6 +160,22 @@ class AlienInvasion:
         new_alien.rect.x = x_pos
         new_alien.rect.y = y_pos    
         self.aliens.add(new_alien)
+
+    def _ship_hit(self):
+        """Reakcja na uderzenie statku"""
+        if self.stats.ship_left > 0:
+            # Zmniejszenie ilości statków, usunięcie pocisków i obcych
+            self.stats.ship_left -= 1
+            self.bullets.empty()
+            self.aliens.empty()
+
+            # Tworzenie nowej floty i środkowanie statku
+            self._create_fleet()
+            self.ship.center_ship()
+
+            sleep(1)
+        else:
+            self.game_active = False
 
 if __name__ == "__main__":
     ai = AlienInvasion()

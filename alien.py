@@ -33,5 +33,10 @@ class Alien(Sprite):
         screen_rect = self.screen.get_rect()
         return (self.rect.right >= screen_rect.right) or (self.rect.left <= 0)
     
+    def check_bottom(self):
+        """Zwraca True jeżeli obcy przekroczy dolną krawędź"""
+        return self.rect.bottom >= self.settings.screen_height
+    
     def change_direction(self):
+        """Zmiana kierunku ruchu"""
         self.direction *= -1
