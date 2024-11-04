@@ -7,6 +7,7 @@ from bullet import Bullet
 from alien import Alien
 from background import Background
 from game_stats import GameStats
+from buttons import Button
 
 class AlienInvasion:
     """Klasa ogólna przeznaczona do zarządzania zasobami i sposobem dzialania gry"""
@@ -33,9 +34,11 @@ class AlienInvasion:
         self.background = Background(self)
         # Tworzenie instancji statystyk
         self.stats = GameStats(self, self.number_of_aliens)
+        # Tworzenie instancji przycisku
+        self.play_btn = Button(self, "Play")
 
         # Gra aktywna
-        self.game_active = True
+        self.game_active = False
 
     def run_game(self):
         """Rozpoczęcie gry"""
@@ -53,8 +56,14 @@ class AlienInvasion:
                 self._check_keydown_event(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_event(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_btn(mouse_pos)
         self._check_collision()
         self._check_aliens_bottom()
+        if self.game_active and not self._check_aliens_alive():
+            self.game_active = False
+
     
     def _check_keydown_event(self, event: pygame.event):
         """Reakcja na upuszczenie klawisza"""
@@ -96,6 +105,26 @@ class AlienInvasion:
                 self._ship_hit()
                 break
 
+    def _check_play_btn(self, mouse_pos):
+        """Rozpoczęcie nowej gry po naciśnięciu przycisku"""
+        btn_clicked = self.play_btn.rect.collidepoint(mouse_pos)
+        if btn_clicked and not self.game_active:
+            self.game_active = True
+            # Reset statystyk
+            self.stats.reset_stats()
+            # Zerowanie obcych i pocisków
+            self.aliens.empty()
+            self.bullets.empty()
+
+            # Tworzenie floty i centrowanie statku
+            self._create_fleet()
+            self.ship.center_ship()
+
+    def _check_aliens_alive(self):
+        """Sprawdzenie czy obcy zostali zabici"""
+        return self.aliens.__len__()
+
+
     def _update_screen(self):
         """Uaktualnienie obrazów na ekranie"""
         self.screen.fill(self.settings.bg_color)
@@ -104,6 +133,8 @@ class AlienInvasion:
             self._update_ship()
             self._update_bullets()
             self._update_fleet()
+        else:
+            self.play_btn.draw_btn()
 
         pygame.display.flip()
 
