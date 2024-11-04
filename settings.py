@@ -9,6 +9,7 @@ class Settings():
         self.screen_height = 800
         self.bg_color = (0, 0, 0)
         self.background_speed = 2
+        self.text_color = (255, 255, 255)
 
         # Ustawienia statku
         self.ship_speed = 5

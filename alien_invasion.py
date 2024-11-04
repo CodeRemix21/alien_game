@@ -8,6 +8,7 @@ from alien import Alien
 from background import Background
 from game_stats import GameStats
 from buttons import Button
+from scoreboard import ScoreBoard
 
 class AlienInvasion:
     """Klasa ogólna przeznaczona do zarządzania zasobami i sposobem dzialania gry"""
@@ -36,6 +37,8 @@ class AlienInvasion:
         self.stats = GameStats(self, self.number_of_aliens)
         # Tworzenie instancji przycisku
         self.play_btn = Button(self, "Play")
+        # Tworzenie tablicy wyników
+        self.score = ScoreBoard(self)
 
         # Gra aktywna
         self.game_active = False
@@ -95,7 +98,6 @@ class AlienInvasion:
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             print("statek trafiony")
             self.stats.killed_aliens_in_game()
-            self.stats.reset_killed_aliens()
             self._ship_hit()
 
     def _check_aliens_bottom(self):
@@ -133,6 +135,7 @@ class AlienInvasion:
             self._update_ship()
             self._update_bullets()
             self._update_fleet()
+            self.score.show_score()
         else:
             self.play_btn.draw_btn()
 
@@ -199,6 +202,7 @@ class AlienInvasion:
             self.stats.ship_left -= 1
             self.bullets.empty()
             self.aliens.empty()
+            self.stats.reset_killed_aliens()
 
             # Tworzenie nowej floty i środkowanie statku
             self._create_fleet()
