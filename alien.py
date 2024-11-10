@@ -1,6 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
-
+#
 class Alien(Sprite):
     """Klasa przeznaczona do zarządzania obcymi"""
     def __init__(self, ai_game):
